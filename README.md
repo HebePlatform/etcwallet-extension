@@ -10,3 +10,4 @@
     - [ ] Switch network / Add network
     - [ ] Add token
 - [ ] Switch network / Add network
+- [ ] Transaction verification
