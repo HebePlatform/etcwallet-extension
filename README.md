@@ -11,4 +11,4 @@
     - [x] Add token
 - [x] Switch network / Add network
 - [ ] Transaction verification
-- [ ] Manage connected sites
+- [x] Manage connected sites
