@@ -12,4 +12,6 @@ Etc Wallet is convenient for dapp developers to develop, and the window.ethereum
 
 If you think our development is good, please sponsor us to continue to develop: 0x4a5067a98FF03822BC7979b54FC0D8Fc8036CbeE
 
+Etc Wallet supports ETC domain name system: Hens, .etc transfer and Hens avatar display, register Etc domain name system: https://app.hens.domains
 
+![image](./demo.png)
