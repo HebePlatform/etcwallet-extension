@@ -1,5 +1,7 @@
 # etcwallet-extension
 
+https://chrome.google.com/webstore/detail/etcwallet/dceeepfcmoilomeofhafoggbaokjdlco/related?hl=en&authuser=0
+
 Etc Wallet enables you to securely store, send, and receive Etc cryptocurrency, as well as any tokens built on the EthereumClassic  Token Platform including NFTs and fungibles.
 
 Etc Wallet supports users to add any evm chain network, the current transaction record data is taken from the api of blockscout.
