@@ -1,0 +1,46 @@
+{
+  "name": "etcwallet",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "build-watch": "vue-cli-service  --env.NODE_ENV=development build-watch --mode development"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "core-js": "^3.8.3",
+    "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.0",
+    "crypto-js": "^4.1.1",
+    "dexie": "^3.2.2",
+    "element-ui": "^2.15.8",
+    "https-browserify": "^1.0.0",
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "os": "^0.1.2",
+    "os-browserify": "^0.3.0",
+    "stream": "0.0.2",
+    "vant": "^2.12.47",
+    "vue": "^2.6.14",
+    "vue-clipboard2": "^0.3.3",
+    "vue-i18n": "^8.8.2",
+    "vue-router": "^3.5.1",
+    "vuex": "^3.6.2",
+    "web3": "^1.7.3"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.0",
+    "@vue/cli-plugin-router": "~5.0.0",
+    "@vue/cli-plugin-vuex": "~5.0.0",
+    "@vue/cli-service": "~5.0.0",
+    "less": "^4.0.0",
+    "less-loader": "^8.0.0",
+    "vue-cli-plugin-chrome-extension-cli": "~1.1.4",
+    "vue-template-compiler": "^2.6.14"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
