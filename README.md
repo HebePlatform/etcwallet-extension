@@ -17,3 +17,7 @@ If you think our development is good, please sponsor us to continue to develop: 
 Etc Wallet supports ETC domain name system: Hens, .etc transfer and Hens avatar display, register Etc domain name system: https://app.hens.domains
 
 ![image](./demo.png)
+
+Issues that need to be fixed:
+
+1.Sending calculation gas error, resulting in unable to obtain correct gas
