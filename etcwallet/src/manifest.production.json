@@ -14,7 +14,9 @@
     "notifications"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "http://*/",
+    "https://*/"
   ],
   "web_accessible_resources": [
     {
@@ -30,6 +32,7 @@
   "action": {
     "default_popup": "popup.html"
   },
+  "omnibox": { "keyword" : "etc" },
   "content_scripts": [
     {
       "matches": [

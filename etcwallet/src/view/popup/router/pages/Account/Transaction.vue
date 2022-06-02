@@ -129,7 +129,9 @@
                             <img src="../../../../../assets/icon_48.png"
                                  style="width: 32px; height: 32px; border-radius: 50%;">
                         </div>
-                        <div style="float: left;line-height: 32px;margin-left: 10px;color: #6a737d">
+                        <div v-clipboard:copy="txmodel.from"
+                             v-clipboard:success="onCopy"
+                             v-clipboard:error="onError" style="float: left;line-height: 32px;margin-left: 10px;color: #6a737d">
                             {{$g.subname(txmodel.from)}}
                         </div>
                     </div>
@@ -142,7 +144,9 @@
                             <img src="../../../../../assets/icon_48.png"
                                  style="width: 32px; height: 32px; border-radius: 50%;">
                         </div>
-                        <div style="float: left;line-height: 32px;margin-left: 10px;color: #6a737d">
+                        <div  v-clipboard:copy="txmodel.to"
+                              v-clipboard:success="onCopy"
+                              v-clipboard:error="onError"  style="float: left;line-height: 32px;margin-left: 10px;color: #6a737d">
                             {{$g.subname(txmodel.to)}}
                         </div>
                     </div>

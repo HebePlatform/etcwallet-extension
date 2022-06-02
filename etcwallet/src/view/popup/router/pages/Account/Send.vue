@@ -178,7 +178,8 @@
         this.sendis = false;
       },
       async save() {
-        try {
+        try
+        {
           if (this.model.to.trim() == '') {
             this.$message({
               showClose: true,
@@ -289,11 +290,22 @@
             model.data = senddata;
             this.model.msg = senddata;
           }
-          this.model.feegaslimit = await this.$g.account.eth_estimateGas(this.$store.state.network.rpcUrls[0], {
+          let gas = {
             'from': this.model.from,
             'to': this.model.to,
             'data': web3.utils.toHex(this.model.msg),
-          });
+            'value': web3.utils.toWei(this.model.sum, 'ether'),
+          };
+          if (gas.data == '0x0') {
+            delete gas.data;
+          }
+          if (gas.value == '0'||gas.value == '0x0') {
+            delete gas.value;
+          }
+          let feegaslimit = await this.$g.account.eth_estimateGas(this.$store.state.network.rpcUrls[0], gas);
+          if (this.model.feegaslimit < feegaslimit) {
+            this.model.feegaslimit = feegaslimit;
+          }
           model.gas = this.model.feegaslimit;
           this.model.fee = web3.utils.fromWei((web3.utils.toWei(this.model.feegasprice, 'Gwei') * this.model.feegaslimit).toString(), 'ether');
 
@@ -305,11 +317,10 @@
           this.send200 = false;
           this.send400 = false;
         } catch (e) {
-          console.log(e);
           this.sendloading = false;
           this.$message({
             showClose: true,
-            message: 'error',
+            message: e.toString(),
             type: 'error',
           });
         }

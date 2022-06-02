@@ -166,12 +166,13 @@
       async send() {
         this.loading = true;
         let hash = await this.$g.account.eth_sendRawTransaction(this.network.rpcUrls[0], this.hex);
-
         this.loading = false;
         this.sendis = false;
 
         if (hash != '404') {
           this.send200 = true;
+          this.hash = hash;
+
           chrome.runtime.sendMessage(
             { sendtx: hash.transaction },
             function(response) {
@@ -185,83 +186,102 @@
 
       },
       async save() {
+        try {
+          if (this.model.to.trim() == '') {
+            this.$message({
+              showClose: true,
+              message: 'To address cannot be empty',
+              type: 'error',
+            });
+            return;
+          }
+          if (this.model.feegaslimit.trim() == '') {
+            this.$message({
+              showClose: true,
+              message: 'Gas cannot be empty',
+              type: 'error',
+            });
+            return;
+          }
+          if (this.model.feegasprice.trim() == '') {
+            this.$message({
+              showClose: true,
+              message: 'GasPrice cannot be empty',
+              type: 'error',
+            });
+            return;
+          }
+          if (this.model.sum.trim() == '') {
+            this.$message({
+              showClose: true,
+              message: 'Amount to send cannot be empty',
+              type: 'error',
+            });
+            return;
+          }
+          this.sendloading = true;
+          this.model.fee = web3.utils.fromWei((web3.utils.toWei(this.model.feegasprice, 'Gwei') * this.model.feegaslimit).toString(), 'ether');
+          let prv = await this.$g.account.getprv();
 
-        if (this.model.to.trim() == '') {
-          this.$message({
-            showClose: true,
-            message: 'To address cannot be empty',
-            type: 'error',
+          let wif = await this.$g.decrypt(this.wallet.encrypt, prv.pass);
+          let nonce = await this.$g.account.getNonce({
+            rpc: this.network.rpcUrls[0],
+            addr: this.wallet.addr,
           });
-          return;
-        }
-        if (this.model.feegaslimit.trim() == '') {
-          this.$message({
-            showClose: true,
-            message: 'Gas cannot be empty',
-            type: 'error',
-          });
-          return;
-        }
-        if (this.model.feegasprice.trim() == '') {
-          this.$message({
-            showClose: true,
-            message: 'GasPrice cannot be empty',
-            type: 'error',
-          });
-          return;
-        }
-        if (this.model.sum.trim() == '') {
-          this.$message({
-            showClose: true,
-            message: 'Amount to send cannot be empty',
-            type: 'error',
-          });
-          return;
-        }
-        this.sendloading = true;
-        this.model.fee = web3.utils.fromWei((web3.utils.toWei(this.model.feegasprice, 'Gwei') * this.model.feegaslimit).toString(), 'ether');
-        let prv = await this.$g.account.getprv();
 
-        let wif = await this.$g.decrypt(this.wallet.encrypt, prv.pass);
-        let nonce = await this.$g.account.getNonce({
-          rpc: this.network.rpcUrls[0],
-          addr: this.wallet.addr,
-        });
-
-        this.model.feegaslimit = await this.$g.account.eth_estimateGas(this.network.rpcUrls[0], {
-          'from': this.model.from,
-          'to': this.model.to,
-          'data': web3.utils.toHex(this.model.msg),
-          'value': web3.utils.toHex(web3.utils.toWei(this.model.sum, 'ether')),
-        });
-        let txs = {
-          nonce: web3.utils.toHex(nonce),
-          gas: web3.utils.toHex(this.model.feegaslimit),
-          value: web3.utils.toHex(web3.utils.toWei(this.model.sum, 'ether')),
-          gasPrice: web3.utils.toHex(web3.utils.toWei(this.model.feegasprice, 'Gwei')),
-          common: {
-            baseChain: 'mainnet',
-            hardfork: 'petersburg',
-            customChain: {
-              name: this.network.chainName,
-              chainId: web3.utils.hexToNumber(this.network.chainId),
-              networkId: web3.utils.hexToNumber(this.network.chainId),
+          let gas = {
+            'from': this.model.from,
+            'to': this.model.to,
+            'data': web3.utils.toHex(this.model.msg),
+            'value': web3.utils.toWei(this.model.sum, 'ether'),
+          };
+          if (gas.data == '0x0') {
+            delete gas.data;
+          }
+          if (gas.value == '0' || gas.value == '0x0') {
+            delete gas.value;
+          }
+          let feegaslimit = await this.$g.account.eth_estimateGas(this.network.rpcUrls[0], gas);
+          if (this.model.feegaslimit < feegaslimit) {
+            this.model.feegaslimit = feegaslimit;
+          }
+          let txs = {
+            nonce: web3.utils.toHex(nonce),
+            gas: web3.utils.toHex(this.model.feegaslimit),
+            value: web3.utils.toHex(web3.utils.toWei(this.model.sum, 'ether')),
+            gasPrice: web3.utils.toHex(web3.utils.toWei(this.model.feegasprice, 'Gwei')),
+            common: {
+              baseChain: 'mainnet',
+              hardfork: 'petersburg',
+              customChain: {
+                name: this.network.chainName,
+                chainId: web3.utils.hexToNumber(this.network.chainId),
+                networkId: web3.utils.hexToNumber(this.network.chainId),
+              },
             },
-          },
-        };
-        if (this.model.to != '0x') {
-          txs.to = this.model.to;
+          };
+          if (this.model.to != '0x') {
+            txs.to = this.model.to;
+          }
+          if (this.model.msg != '' && this.model.msg.trim() != '') {
+            txs.data = web3.utils.toHex(this.model.msg);
+          }
+          let tx = await web3.eth.accounts.signTransaction(txs, wif.plaintext);
+          this.hex = tx.rawTransaction;
+          this.sendloading = false;
+          this.payshow = true;
+          this.sendis = true;
+          this.send200 = false;
+          this.send400 = false;
+        } catch (e) {
+          this.sendloading = false;
+          this.$message({
+            showClose: true,
+            message: e.toString(),
+            type: 'error',
+          });
         }
-        if (this.model.msg != '' && this.model.msg.trim() != '') {
-          txs.data = web3.utils.toHex(this.model.msg);
-        }
-        let tx = await web3.eth.accounts.signTransaction(txs, wif.plaintext);
-        this.hex = tx.rawTransaction;
-        this.sendloading = false;
-        this.payshow = true;
-        this.sendis = true;
-        this.send200 = false;
-        this.send400 = false;
+
       },
       onClickLeft() {
         this.$router.back(-1);

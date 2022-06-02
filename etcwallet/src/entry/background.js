@@ -2,7 +2,6 @@ const NOTIFICATION_URL = chrome.runtime.getURL('notification.html');
 // import Web3 from 'web3';
 //
 // let web3 = new Web3();
-import axios from 'axios';
 import $g from './../global';
 
 let network = '';
@@ -207,55 +206,58 @@ chrome.runtime.onConnect.addListener(async (port) => {
 });
 
 
-// let omniboxlist = [];
-// let omniboxtxt = '';
-// chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
-//   omniboxlist = [];
-//   omniboxtxt = text;
-//   if (!text) return;
-//   if (text.indexOf('.etc') != -1) {
-//     let tt = await $g.hens.getAllProperties( text, false);
-//     tt.textlist.forEach(item => {
-//       if (item.txt != 'Email' && item.txt != 'Avatar' && item.txt != 'IpfsUrl'
-//         && item.txt != 'Notice' && item.txt != 'Keywords' && item.txt != 'Description'
-//       ) {
-//         if (item.val != '') {
-//           omniboxlist.push(item);
-//         }
-//       }
-//     });
-//     if (omniboxlist.length == 0) {
-//       suggest([
-//         { content: 'Register Hens:' + text, description: 'Register Hens:' + text },
-//       ]);
-//     } else {
-//       let list = [];
-//       omniboxlist.forEach(item => {
-//         list.push({
-//           content: 'Hens-' + item.txt + ' ' + item.val,
-//           description: 'Hens-' + item.txt + ' ' + item.val,
-//         });
-//       });
-//       suggest(list);
-//     }
-//   }
-// });
-// chrome.omnibox.onInputEntered.addListener((text) => {
-//   if (!text) return;
-//   let href = '';
-//   if (text.indexOf('Register Hens:') != -1 && text.indexOf('.etc') != -1) {
-//     let txt = text.split('Register Hens:')[1];
-//     txt = txt.split('.etc')[0];
-//     href = 'https://app.hens.domains/#/search?url=' + txt;
-//   }
-//   if (omniboxtxt.indexOf('.etc') != -1) {
-//     if (text.indexOf('Hens') == 0) {
-//       let txt = text.split(' ')[1];
-//       href = txt;
-//     }
-//   }
-//   openUrlCurrentTab(href);
-// });
+let omniboxlist = [];
+let omniboxtxt = '';
+chrome.omnibox.setDefaultSuggestion({
+  description: 'Please enter the HENS name, such as: hebe.etc'
+});
+chrome.omnibox.onInputChanged.addListener(async (text, suggest) => {
+  omniboxlist = [];
+  omniboxtxt = text;
+  if (!text) return;
+  if (text.indexOf('.etc') != -1) {
+    let tt = await $g.hens.getAllProperties( text, false);
+    tt.textlist.forEach(item => {
+      if (item.txt != 'Email' && item.txt != 'Avatar' && item.txt != 'IpfsUrl'
+        && item.txt != 'Notice' && item.txt != 'Keywords' && item.txt != 'Description'
+      ) {
+        if (item.val != ''&&item.val.length>2) {
+          omniboxlist.push(item);
+        }
+      }
+    });
+    if (omniboxlist.length == 0) {
+      suggest([
+        { content: 'Register Hens:' + text, description: 'Register Hens:' + text },
+      ]);
+    } else {
+      let list = [];
+      omniboxlist.forEach(item => {
+        list.push({
+          content: 'Hens-' + item.txt + ' ' + item.val,
+          description: 'Hens-' + item.txt + ' ' + item.val,
+        });
+      });
+      suggest(list);
+    }
+  }
+});
+chrome.omnibox.onInputEntered.addListener((text) => {
+  if (!text) return;
+  let href = '';
+  if (text.indexOf('Register Hens:') != -1 && text.indexOf('.etc') != -1) {
+    let txt = text.split('Register Hens:')[1];
+    txt = txt.split('.etc')[0];
+    href = 'https://app.hens.domains/#/search?url=' + txt;
+  }
+  if (omniboxtxt.indexOf('.etc') != -1) {
+    if (text.indexOf('Hens') == 0) {
+      let txt = text.split(' ')[1];
+      href = txt;
+    }
+  }
+  chrome.tabs.create({ url: href });
+});
 
 async function getCurrentTabId() {
   return new Promise(async (resolve, reject) => {

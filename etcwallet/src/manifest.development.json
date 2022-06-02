@@ -14,8 +14,11 @@
     "notifications"
   ],
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "http://*/",
+    "https://*/"
   ],
+  "omnibox": { "keyword" : "etc" },
   "web_accessible_resources": [
     {
       "resources": [
