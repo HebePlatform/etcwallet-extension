@@ -14,6 +14,9 @@
   };
 </script>
 <style>
+  .el-message__content{
+    word-break: break-word;
+  }
   .el-message {
     z-index: 9999 !important;
   }

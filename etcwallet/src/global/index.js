@@ -582,7 +582,12 @@ export default {
     },
     async eth_estimateGas(rpc, data) {
       return new Promise((resolve, reject) => {
-
+        console.log( {
+          'jsonrpc': '2.0',
+          'method': 'eth_estimateGas',
+          'params': [data],
+          'id': 1,
+        });
         axios({
           method: 'post',
           url: rpc,
@@ -593,6 +598,7 @@ export default {
             'id': 1,
           },
         }).then(res => {
+          console.log(res);
           let count = parseInt(data.data.length / 1000);
           if (count <= 1) {
             count = 2;

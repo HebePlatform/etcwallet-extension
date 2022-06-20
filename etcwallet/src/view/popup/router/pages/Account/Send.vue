@@ -267,7 +267,7 @@
                 chainId: web3.utils.hexToNumber(this.$store.state.network.chainId),
                 networkId: web3.utils.hexToNumber(this.$store.state.network.chainId),
               },
-            },
+            }
           };
           if (this.$g.coin.contract != '') {
             model.to = this.$g.coin.contract;
@@ -308,7 +308,7 @@
           }
           model.gas = this.model.feegaslimit;
           this.model.fee = web3.utils.fromWei((web3.utils.toWei(this.model.feegasprice, 'Gwei') * this.model.feegaslimit).toString(), 'ether');
-
+          console.log(model);
           let tx = await web3.eth.accounts.signTransaction(model, wif.plaintext);
           this.hex = tx.rawTransaction;
           this.sendloading = false;

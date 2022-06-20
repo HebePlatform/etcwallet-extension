@@ -233,7 +233,7 @@
             'from': this.model.from,
             'to': this.model.to,
             'data': web3.utils.toHex(this.model.msg),
-            'value': web3.utils.toWei(this.model.sum, 'ether'),
+            'value': web3.utils.toHex(web3.utils.toWei(this.model.sum, 'ether')),
           };
           if (gas.data == '0x0') {
             delete gas.data;
@@ -318,6 +318,7 @@
       if (this.$g.model.params[0].to && this.$g.model.params[0].to != '0x') {
         this.model.to = this.$g.model.params[0].to;
       }
+      console.log(this.$g.model);
       if (this.$g.model.params[0].value) {
         this.model.sum = web3.utils.fromWei(this.$g.model.params[0].value, 'ether');
       }
@@ -331,12 +332,21 @@
       if (this.$g.model.params[0].value.indexOf('0x') == -1) {
         value = web3.utils.toHex(web3.utils.toWei(this.model.sum, 'ether'));
       }
-      this.model.feegaslimit = await this.$g.account.eth_estimateGas(this.network.rpcUrls[0], {
+
+      let gas = {
         'from': this.model.from,
         'to': this.model.to,
-        'data': this.$g.model.params[0].data,
+        'data':this.$g.model.params[0].data,
         'value': value,
-      });
+      };
+      if (gas.data == '0x0') {
+        delete gas.data;
+      }
+      if (gas.value == '0' || gas.value == '0x0') {
+        delete gas.value;
+      }
+      this.model.feegaslimit = await this.$g.account.eth_estimateGas(this.network.rpcUrls[0],
+        gas);
       this.sendloading = false;
 
     },
